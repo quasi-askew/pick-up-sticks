@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import twitterLogo from "./assets/twitter-logo.svg";
+import CandyMachine from "./CandyMachine";
+import gif from "./assets/pickupsticks.gif";
+import randomColor from "randomcolor";
 
 // Constants
 const TWITTER_HANDLE = "_buildspace";
@@ -8,6 +11,12 @@ const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
 const App = () => {
   const [walletAddress, setWalletAddress] = useState(null);
+  const [themeColors, setThemeColors] = useState({
+    text: "#ffffff",
+    background: "#000000",
+    button: "linear-gradient(to right, #4880EC, #019CAD)",
+    buttonText: "#000000",
+  });
 
   // Actions
 
@@ -45,15 +54,14 @@ const App = () => {
    * We will write the logic for this next!
    */
   const connectWallet = async () => {
-		const { solana } = window;
-	
-		if (solana) {
-			const response = await solana.connect();
-			console.log('Connected with Public Key:', response.publicKey.toString());
-			setWalletAddress(response.publicKey.toString());
-		}
-	};
-	
+    const { solana } = window;
+
+    if (solana) {
+      const response = await solana.connect();
+      console.log("Connected with Public Key:", response.publicKey.toString());
+      setWalletAddress(response.publicKey.toString());
+    }
+  };
 
   /*
    * We want to render this UI when the user hasn't connected
@@ -63,6 +71,10 @@ const App = () => {
     <button
       className="cta-button connect-wallet-button"
       onClick={connectWallet}
+      style={{
+        backgroundImage: themeColors.button,
+        color: themeColors.buttonText,
+      }}
     >
       Connect to Wallet
     </button>
@@ -80,15 +92,47 @@ const App = () => {
     return () => window.removeEventListener("load", onLoad);
   }, []);
 
+  useEffect(() => {
+    let buttonBgLeft = randomColor({
+      luminosity: "dark",
+    });
+    let buttonBgRight = randomColor({
+      luminosity: "dark",
+    });
+    setThemeColors({
+      text: randomColor({
+        luminosity: "dark",
+      }),
+      background: randomColor({
+        luminosity: "light",
+        format: "rgba",
+        alpha: 0.3,
+      }),
+      button: `linear-gradient(left, ${buttonBgLeft}, ${buttonBgRight})`,
+      buttonText: randomColor({
+        luminosity: "light",
+      }),
+    });
+  }, []);
+
   return (
-    <div className="App">
+    <div
+      className="App"
+      style={{
+        color: themeColors.text,
+        background: themeColors.background,
+      }}
+    >
       <div className="container">
         <div className="header-container">
-          <p className="header">🍭 Candy Drop</p>
-          <p className="sub-text">NFT drop machine with fair mint</p>
+          <div className="pickupsticks-gif-container">
+            <img src={gif} alt="Pick up sticks" />
+          </div>
+          <h1 className="header">Pick Up Sticks</h1>
           {/* Add the condition to show this only if we don't have a wallet address */}
           {!walletAddress && renderNotConnectedContainer()}
         </div>
+        {walletAddress && <CandyMachine walletAddress={window.solana} />}
         <div className="footer-container">
           <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
           <a
