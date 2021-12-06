@@ -335,6 +335,7 @@ const CandyMachine = ({ walletAddress }) => {
     if (data.length !== 0) {
       for (const mint of data) {
         // Get URI
+				// TODO: There is some bug here that is adding on the array rather than replacing it after mint
         const response = await fetch(mint.data.uri);
         const parse = await response.json();
         console.log("Past Minted NFT", mint);
