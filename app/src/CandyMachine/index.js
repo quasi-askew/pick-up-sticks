@@ -28,7 +28,7 @@ const MAX_CREATOR_LEN = 32 + 1 + 1;
 
 const CandyMachine = ({ walletAddress }) => {
   const [machineStats, setMachineStats] = useState(null);
-  const [mints, setMints] = useState([]);
+  const [mintImages, setMintImages] = useState([]);
 
   const [isMinting, setIsMinting] = useState(false);
   const [isLoadingMints, setIsLoadingMints] = useState(false);
@@ -335,33 +335,40 @@ const CandyMachine = ({ walletAddress }) => {
     if (data.length !== 0) {
       for (const mint of data) {
         // Get URI
-				// TODO: There is some bug here that is adding on the array rather than replacing it after mint
+        // TODO: There is some bug here that is adding on the array rather than replacing it after mint
         const response = await fetch(mint.data.uri);
         const parse = await response.json();
-        console.log("Past Minted NFT", mint);
+
+        let isAlreadyAddedToMints = mintImages.find((mint) => {
+          console.log({ mint });
+          console.log(parse.image);
+          return mint === parse.image;
+        });
 
         // Get image URI
-        if (!mints.find((mint) => mint === parse.image)) {
-          setMints((prevState) => [...prevState, parse.image]);
+        if (!isAlreadyAddedToMints) {
+          setMintImages((prevState) => [...prevState, parse.image]);
         }
       }
     }
 
     setIsLoadingMints(false);
-  }, []);
+  }, [mintImages]);
 
   useEffect(() => {
-    getCandyMachineState();
-  }, [getCandyMachineState]);
+    if (mintImages && !mintImages.length) {
+      getCandyMachineState();
+    }
+  }, [getCandyMachineState, mintImages]);
 
   const renderMintedItems = () => (
-    <div className="mt-4">
-      <h2 className="my-2 block text-indigo-600 font-bold text-3xl">
-        Minted Items ✨
+    <div className="mt-4 p-8 grid justify-content-center border-4 border-light-blue-500">
+      <h2 className="mb-5 block text-pink-600 font-bold text-4xl">
+        🌈 Pick Up Sticks Mint Gallery 🌈
       </h2>
-      <div className="grid gap-2 grid-cols-4">
-        {mints.map((mint) => (
-          <div key={mint}>
+      <div className="grid gap-2 lg:gap-4 grid-cols-2 lg:grid-cols-4">
+        {mintImages.map((mint, index) => (
+          <div className="stickImage" key={index}>
             <img src={mint} alt={`Minted NFT ${mint}`} />
           </div>
         ))}
@@ -384,7 +391,7 @@ const CandyMachine = ({ walletAddress }) => {
 
     // Else let's just return the current drop date
     return (
-      <p className="mt-2 block text-indigo-600 font-bold">
+      <p className="mt-2 block text-gray-900 font-bold text-base">
         {`Drop Date: ${machineStats.goLiveDateTimeString}`}
       </p>
     );
@@ -395,7 +402,7 @@ const CandyMachine = ({ walletAddress }) => {
     machineStats && (
       <div className="machine-container">
         {renderDropTimer()}
-        <p className="mt-2 block text-indigo-600 font-bold">
+        <p className="mt-2 block text-indigo-500 font-bold text-4xl">
           {`Items Minted: ${machineStats.itemsRedeemed} / ${machineStats.itemsAvailable}`}
         </p>
         {/* Check to see if these properties are equal! */}
@@ -404,7 +411,9 @@ const CandyMachine = ({ walletAddress }) => {
         ) : (
           <div className="mt-5 sm:mt-8 sm:flex sm:justify-center">
             {isMinting ? (
-              <div className="text-indigo-600 xl:inline">It's happening, you are minting!</div>
+              <div className="my-5 text-yellow-400 xl:inline text-6xl animate-pulse">
+                ✨ It's happening, you are minting! ✨
+              </div>
             ) : (
               <div className="flex content-center">
                 <button
@@ -419,11 +428,12 @@ const CandyMachine = ({ walletAddress }) => {
           </div>
         )}
         {isLoadingMints && (
-          <div className="flex justify-center items-center my-8">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-900"></div>
+          <div className="flex justify-center flex-col items-center my-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+						<div className="mt-2">Loading sticks (and sometimes circles)</div>
           </div>
         )}
-        {mints.length > 0 && !isLoadingMints && renderMintedItems()}
+        {mintImages.length > 0 && renderMintedItems()}
       </div>
     )
   );

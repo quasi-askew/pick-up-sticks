@@ -123,14 +123,14 @@ const App = () => {
         background: themeColors.background,
       }}
     >
-      <div className="container">
+      <div className="container mx-auto">
         <div className="header-container">
           <div className="pickupsticks-gif-container">
             <img src={gif} alt="Pick up sticks" />
           </div>
-					<h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-            <span className="block xl:inline">Pick Up Sticks</span>
-            <span className="block text-indigo-600">w/ <a style={{color: themeColors.text}} href="https://p5js.org/">p5.js</a></span>
+					<h1 className="tracking-tight font-extrabold text-gray-900">
+            <span className="block xl:inline text-6xl text-indigo-900">Pick Up Sticks</span>
+            <span className="block mt-2 text-indigo-600"><a style={{color: themeColors.text}} href="https://p5js.org/">using p5.js</a></span>
           </h1>
           {/* Add the condition to show this only if we don't have a wallet address */}
           {!walletAddress && renderNotConnectedContainer()}

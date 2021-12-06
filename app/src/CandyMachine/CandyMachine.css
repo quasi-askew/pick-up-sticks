@@ -18,3 +18,8 @@
 .minted-items-container {
 	margin-top: 16px;
 }
+
+.stickImage img {
+	/* height: 500px;
+	object-fit: cover; */
+}
