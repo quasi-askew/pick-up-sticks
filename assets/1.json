@@ -1,1 +1,19 @@
-{"name":"Pick Up Sticks #1","symbol":"","image":"1.png","properties":{"files":[{"uri":"1.png","type":"image/png"}],"creators":[{"address":"4KQw4DDrPD8PJoVkZYqzCj7Z4uvTjyT8ndJN4h6sAdVy","share":100}]}}
+{
+  "name": "Pick Up Sticks #1",
+  "symbol": "",
+  "image": "1.png",
+  "properties": {
+    "files": [
+      {
+        "uri": "1.png",
+        "type": "image/png"
+      }
+    ],
+    "creators": [
+      {
+        "address": "CtUaoA5v3MuLswN4NapgMmWRQZ6FT4mEQyiaoZmhuVKy",
+        "share": 100
+      }
+    ]
+  }
+}
