@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@craco/craco": "^6.4.2",
     "@metaplex/js": "^4.7.0",
     "@project-serum/anchor": "^0.18.2",
     "@solana/web3.js": "^1.30.2",
@@ -16,9 +17,9 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "PORT=3006 react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "PORT=3006 craco start",
+    "build": "craco build",
+    "test": "craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -38,5 +39,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^9.8.8",
+    "postcss": "^7.0.39",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
   }
 }

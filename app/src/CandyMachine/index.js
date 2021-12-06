@@ -9,7 +9,7 @@ import {
   TOKEN_METADATA_PROGRAM_ID,
   SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
 } from "./helpers";
-import randomColor from "randomcolor";
+import CountdownTimer from "../CountdownTimer";
 
 const {
   metadata: { Metadata, MetadataProgram },
@@ -30,10 +30,8 @@ const CandyMachine = ({ walletAddress }) => {
   const [machineStats, setMachineStats] = useState(null);
   const [mints, setMints] = useState([]);
 
-  const [buttonColors, setButtonColors] = useState({
-    button: "linear-gradient(to right, #4880EC, #019CAD)",
-    buttonText: "#000000",
-  });
+  const [isMinting, setIsMinting] = useState(false);
+  const [isLoadingMints, setIsLoadingMints] = useState(false);
 
   // Actions
   const fetchHashTable = async (hash, metadataEnabled) => {
@@ -119,6 +117,8 @@ const CandyMachine = ({ walletAddress }) => {
 
   const mintToken = async () => {
     try {
+      // Add this here
+      setIsMinting(true);
       const mint = web3.Keypair.generate();
       const token = await getTokenWallet(
         walletAddress.publicKey,
@@ -203,6 +203,8 @@ const CandyMachine = ({ walletAddress }) => {
             const { result } = notification;
             if (!result.err) {
               console.log("NFT Minted!");
+              setIsMinting(false);
+              await getCandyMachineState();
             }
           }
         },
@@ -210,6 +212,9 @@ const CandyMachine = ({ walletAddress }) => {
       );
     } catch (error) {
       let message = error.msg || "Minting failed! Please try again!";
+
+      // If we have an error set our loading flag to false
+      setIsMinting(false);
 
       if (!error.msg) {
         if (error.message.indexOf("0x138")) {
@@ -320,6 +325,8 @@ const CandyMachine = ({ walletAddress }) => {
       goLiveDateTimeString,
     });
 
+    setIsLoadingMints(true);
+
     const data = await fetchHashTable(
       process.env.REACT_APP_CANDY_MACHINE_ID,
       true
@@ -338,35 +345,22 @@ const CandyMachine = ({ walletAddress }) => {
         }
       }
     }
+
+    setIsLoadingMints(false);
   }, []);
 
   useEffect(() => {
     getCandyMachineState();
   }, [getCandyMachineState]);
 
-  useEffect(() => {
-    let buttonText = randomColor({
-      luminosity: "light",
-    });
-
-    let buttonBg = randomColor({
-      luminosity: "dark",
-    });
-
-    setButtonColors({
-      button: buttonBg,
-      buttonText: buttonText,
-    });
-  }, []);
-
   const renderMintedItems = () => (
-    <div className="gif-container">
-			<div className="minted-items-container">
-      <h2 className="sub-text">Minted Items ✨</h2>
-			</div>
-      <div className="gif-grid">
+    <div className="mt-4">
+      <h2 className="my-2 block text-indigo-600 font-bold text-3xl">
+        Minted Items ✨
+      </h2>
+      <div className="grid gap-2 grid-cols-4">
         {mints.map((mint) => (
-          <div className="gif-item" key={mint}>
+          <div key={mint}>
             <img src={mint} alt={`Minted NFT ${mint}`} />
           </div>
         ))}
@@ -374,26 +368,61 @@ const CandyMachine = ({ walletAddress }) => {
     </div>
   );
 
+  // Create render function
+  const renderDropTimer = () => {
+    // Get the current date and dropDate in a JavaScript Date object
+    const currentDate = new Date();
+    const dropDate = new Date(machineStats.goLiveData * 1000);
+
+    // If currentDate is before dropDate, render our Countdown component
+    if (currentDate < dropDate) {
+      console.log("Before drop date!");
+      // Don't forget to pass over your dropDate!
+      return <CountdownTimer dropDate={dropDate} />;
+    }
+
+    // Else let's just return the current drop date
+    return (
+      <p className="mt-2 block text-indigo-600 font-bold">
+        {`Drop Date: ${machineStats.goLiveDateTimeString}`}
+      </p>
+    );
+  };
+
   return (
     // Only show this if machineStats is available
     machineStats && (
       <div className="machine-container">
-        <p>{`Drop Date: ${machineStats.goLiveDateTimeString}`}</p>
-        <p>{`Items Minted: ${machineStats.itemsRedeemed} / ${machineStats.itemsAvailable}`}</p>
-        <div>
-          <button
-            className="cta-button mint-button"
-            onClick={mintToken}
-            style={{
-              backgroundColor: buttonColors.button,
-              color: buttonColors.buttonText,
-            }}
-          >
-            Mint NFT
-          </button>
-
-          {mints.length > 0 && renderMintedItems()}
-        </div>
+        {renderDropTimer()}
+        <p className="mt-2 block text-indigo-600 font-bold">
+          {`Items Minted: ${machineStats.itemsRedeemed} / ${machineStats.itemsAvailable}`}
+        </p>
+        {/* Check to see if these properties are equal! */}
+        {machineStats.itemsRedeemed === machineStats.itemsAvailable ? (
+          <p className="sub-text">Sold Out 🙊</p>
+        ) : (
+          <div className="mt-5 sm:mt-8 sm:flex sm:justify-center">
+            {isMinting ? (
+              <div className="text-indigo-600 xl:inline">It's happening, you are minting!</div>
+            ) : (
+              <div className="flex content-center">
+                <button
+                  onClick={mintToken}
+                  disabled={isMinting}
+                  className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
+                >
+                  Mint NFT
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+        {isLoadingMints && (
+          <div className="flex justify-center items-center my-8">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-900"></div>
+          </div>
+        )}
+        {mints.length > 0 && !isLoadingMints && renderMintedItems()}
       </div>
     )
   );

@@ -15,21 +15,6 @@
 	gap: 16px;
 }
 
-.gif-grid .gif-item {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  justify-self: center;
-  align-self: center;
-}
-
-.gif-item img {
-  width: 100%;
-	max-width: 200px;
-  /* height: 500px; */
-  object-fit: cover;
-}
-
 .minted-items-container {
 	margin-top: 16px;
 }

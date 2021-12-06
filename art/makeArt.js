@@ -36,7 +36,7 @@ function download(content, fileName, contentType) {
 }
 
 const pickUpSticksData = {
-  totalNFTs: 10,
+  totalNFTs: 100,
   isSaveMode: true,
   creatorAddress: "4KQw4DDrPD8PJoVkZYqzCj7Z4uvTjyT8ndJN4h6sAdVy",
 };
@@ -47,10 +47,10 @@ function setup() {
     let canvas = createCanvas(960, 960);
 
 		// rarity vars
-    let hasMinimalLines = Math.random() < 0.3;
+    let hasMinimalLines = Math.random() < 0.1;
     let hasGinormousLines = Math.random() < 0.1;
-    let hasMoreThanNormalLines = Math.random() < 0.5;
-    let hasMuchoLines = Math.random() < 0.5;
+    let hasMoreThanNormalLines = Math.random() < 0.3;
+    let hasMuchoLines = Math.random() < 0.3;
     let hasHugeStrokes = Math.random() < 0.05;
 
 		// set rarity data
@@ -64,6 +64,7 @@ function setup() {
       numberOfLines = numberOfLines * 5;
     }
 
+		// random bright background color on the canvas
     let bgColor = randomColor({
       luminosity: "bright",
       format: "hex",
@@ -71,6 +72,8 @@ function setup() {
 
     // Add the background color
     background(bgColor);
+
+		// set the artist palette for the nft
     let colorPalette =
       artistColorArray[Math.floor(Math.random() * artistColorArray.length)];
 
@@ -116,8 +119,8 @@ function setup() {
       }
     }
 
+		// Save Image and Data
     if (pickUpSticksData.isSaveMode) {
-      // Save Data
       const jsonData = {
         name: `Pick Up Sticks #${nftIndex}`,
         symbol: "",
@@ -138,7 +141,6 @@ function setup() {
         },
       };
 
-      // Save Image
       saveCanvas(canvas, `${nftIndex}`, "png");
       saveJSON(jsonData, `${nftIndex}.json`);
     }
