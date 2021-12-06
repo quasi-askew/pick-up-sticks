@@ -129,6 +129,7 @@ const App = () => {
             <img src={gif} alt="Pick up sticks" />
           </div>
           <h1 className="header">Pick Up Sticks</h1>
+          <p className="sub-header">Some bright colors via <a style={{color: themeColors.text}} href="https://p5js.org/">p5.js</a></p>
           {/* Add the condition to show this only if we don't have a wallet address */}
           {!walletAddress && renderNotConnectedContainer()}
         </div>

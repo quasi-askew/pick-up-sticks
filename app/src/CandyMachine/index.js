@@ -9,6 +9,8 @@ import {
   TOKEN_METADATA_PROGRAM_ID,
   SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
 } from "./helpers";
+import randomColor from "randomcolor";
+
 const {
   metadata: { Metadata, MetadataProgram },
 } = programs;
@@ -26,6 +28,12 @@ const MAX_CREATOR_LEN = 32 + 1 + 1;
 
 const CandyMachine = ({ walletAddress }) => {
   const [machineStats, setMachineStats] = useState(null);
+  const [mints, setMints] = useState([]);
+
+  const [buttonColors, setButtonColors] = useState({
+    button: "linear-gradient(to right, #4880EC, #019CAD)",
+    buttonText: "#000000",
+  });
 
   // Actions
   const fetchHashTable = async (hash, metadataEnabled) => {
@@ -311,11 +319,60 @@ const CandyMachine = ({ walletAddress }) => {
       goLiveData,
       goLiveDateTimeString,
     });
+
+    const data = await fetchHashTable(
+      process.env.REACT_APP_CANDY_MACHINE_ID,
+      true
+    );
+
+    if (data.length !== 0) {
+      for (const mint of data) {
+        // Get URI
+        const response = await fetch(mint.data.uri);
+        const parse = await response.json();
+        console.log("Past Minted NFT", mint);
+
+        // Get image URI
+        if (!mints.find((mint) => mint === parse.image)) {
+          setMints((prevState) => [...prevState, parse.image]);
+        }
+      }
+    }
   }, []);
 
   useEffect(() => {
     getCandyMachineState();
   }, [getCandyMachineState]);
+
+  useEffect(() => {
+    let buttonText = randomColor({
+      luminosity: "light",
+    });
+
+    let buttonBg = randomColor({
+      luminosity: "dark",
+    });
+
+    setButtonColors({
+      button: buttonBg,
+      buttonText: buttonText,
+    });
+  }, []);
+
+  const renderMintedItems = () => (
+    <div className="gif-container">
+			<div className="minted-items-container">
+      <h2 className="sub-text">Minted Items ✨</h2>
+			</div>
+      <div className="gif-grid">
+        {mints.map((mint) => (
+          <div className="gif-item" key={mint}>
+            <img src={mint} alt={`Minted NFT ${mint}`} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     // Only show this if machineStats is available
@@ -324,9 +381,18 @@ const CandyMachine = ({ walletAddress }) => {
         <p>{`Drop Date: ${machineStats.goLiveDateTimeString}`}</p>
         <p>{`Items Minted: ${machineStats.itemsRedeemed} / ${machineStats.itemsAvailable}`}</p>
         <div>
-          <button className="cta-button mint-button" onClick={null}>
+          <button
+            className="cta-button mint-button"
+            onClick={mintToken}
+            style={{
+              backgroundColor: buttonColors.button,
+              color: buttonColors.buttonText,
+            }}
+          >
             Mint NFT
           </button>
+
+          {mints.length > 0 && renderMintedItems()}
         </div>
       </div>
     )

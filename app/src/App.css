@@ -1,5 +1,5 @@
 .App {
-  height: 100vh;
+  height: 100%;
   /* background-color: rgb(20, 20, 20); */
   overflow: scroll;
   text-align: center;
@@ -11,14 +11,8 @@ p {
 }
 
 .container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0 30px 0 30px;
-  /* color: white; */
+  padding: 30px 8px;
   position: relative;
-  /* background-color: #35aee2; */
 }
 
 .authed-container {
@@ -80,11 +74,8 @@ p {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
   width: 100%;
-  bottom: 0;
-  left: 0;
-  /* padding-bottom: 45px; */
+ 	margin: 24px 8px;
 }
 
 .twitter-logo {
@@ -121,7 +112,7 @@ p {
 }
 
 .pickupsticks-gif-container img {
-	max-width: 400px;
+	max-width: 200px;
 	margin: 24px auto;
 }
 

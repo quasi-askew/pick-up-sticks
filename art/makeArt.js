@@ -4,6 +4,29 @@ function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
 }
 
+const artistColorArray = [
+  {
+    name: "basquiat black king catch",
+    colors: ["#F08838", "#F6A7B8", "#F1EC7A", "#1D4D9F", "#F08838"],
+  },
+  {
+    name: "basquiat dustheads",
+    colors: ["#C11432", "#009ADA", "#070707", "#66A64F", "#FDD10A"],
+  },
+  {
+    name: "albers luminous",
+    colors: ["#D77186", "#61A2DA", "#6CB7DA", "#B5B5B3", "#D75725"],
+  },
+  {
+    name: "ALBRECHT golden cloud",
+    colors: ["#171635", "#00225D", "#763262", "#CA7508", "#E9A621"],
+  },
+  {
+    name: "apple rainbow",
+    colors: ["#F24D98", "#813B7C", "#59D044", "#F3A002", "#F2F44D"],
+  },
+];
+
 function download(content, fileName, contentType) {
   const a = document.createElement("a");
   const file = new Blob([content], { type: contentType });
@@ -13,59 +36,84 @@ function download(content, fileName, contentType) {
 }
 
 const pickUpSticksData = {
-  totalNFTs: 30,
+  totalNFTs: 10,
   isSaveMode: true,
   creatorAddress: "4KQw4DDrPD8PJoVkZYqzCj7Z4uvTjyT8ndJN4h6sAdVy",
 };
 
-async function setup() {
+function setup() {
   for (let nftIndex = 0; nftIndex < pickUpSticksData.totalNFTs; nftIndex++) {
     let numberOfLines = getRandomNumber(10, 1000);
-    let numberOfCircles = getRandomNumber(50, 500);
     let canvas = createCanvas(960, 960);
+
+		// rarity vars
+    let hasMinimalLines = Math.random() < 0.3;
+    let hasGinormousLines = Math.random() < 0.1;
+    let hasMoreThanNormalLines = Math.random() < 0.5;
+    let hasMuchoLines = Math.random() < 0.5;
+    let hasHugeStrokes = Math.random() < 0.05;
+
+		// set rarity data
+    if (hasMinimalLines) {
+      numberOfLines = numberOfLines / 5;
+    } else if (hasGinormousLines) {
+      numberOfLines = numberOfLines * 50;
+    } else if (hasMuchoLines) {
+      numberOfLines = numberOfLines * 10;
+    } else if (hasMoreThanNormalLines) {
+      numberOfLines = numberOfLines * 5;
+    }
+
     let bgColor = randomColor({
-      luminosity: "light",
+      luminosity: "bright",
       format: "hex",
     });
 
     // Add the background color
     background(bgColor);
+    let colorPalette =
+      artistColorArray[Math.floor(Math.random() * artistColorArray.length)];
 
     // Add lines
     for (let lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
-      let lineColor = randomColor({
-        luminosity: "bright",
-        format: "hex",
-      });
+      let color =
+        colorPalette.colors[
+          Math.floor(Math.random() * colorPalette.colors.length)
+        ];
+      let lineColor = color;
 
       stroke(lineColor);
-      strokeWeight(getRandomNumber(1, 20));
+      strokeWeight(hasHugeStrokes ? 20 : getRandomNumber(1, 5));
       line(
-        getRandomNumber(0, 960),
-        getRandomNumber(0, 960),
-        getRandomNumber(0, 960),
-        getRandomNumber(0, 960)
+        getRandomNumber(20, 940),
+        getRandomNumber(20, 940),
+        getRandomNumber(20, 940),
+        getRandomNumber(20, 940)
       );
     }
 
     // Add circles
-    for (let circleIndex = 0; circleIndex < numberOfCircles; circleIndex++) {
-      let circleColor = randomColor({
-        luminosity: "bright",
-        format: "hex",
-      });
+    if (hasMinimalLines) {
+      let numberOfCircles = getRandomNumber(10, 1000);
+      for (let circleIndex = 0; circleIndex < numberOfCircles; circleIndex++) {
+        let color =
+          colorPalette.colors[
+            Math.floor(Math.random() * colorPalette.colors.length)
+          ];
+        let circleColor = color;
 
-      fill(circleColor);
-      noStroke();
+        fill(circleColor);
+        noStroke();
 
-      let circleSize = getRandomNumber(1, 20);
+        let circleSize = getRandomNumber(10, 300);
 
-      ellipse(
-        getRandomNumber(0, 960),
-        getRandomNumber(0, 960),
-        circleSize,
-        circleSize
-      );
+        ellipse(
+          getRandomNumber(20, 940),
+          getRandomNumber(20, 940),
+          circleSize,
+          circleSize
+        );
+      }
     }
 
     if (pickUpSticksData.isSaveMode) {
@@ -91,13 +139,8 @@ async function setup() {
       };
 
       // Save Image
-      await saveCanvas(canvas, `${nftIndex}`, "png");
-
-      await download(
-        JSON.stringify(jsonData),
-        `${nftIndex}.json`,
-        "text/plain"
-      );
+      saveCanvas(canvas, `${nftIndex}`, "png");
+      saveJSON(jsonData, `${nftIndex}.json`);
     }
   }
 }
