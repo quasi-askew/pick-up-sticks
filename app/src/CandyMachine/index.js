@@ -9,7 +9,8 @@ import {
   TOKEN_METADATA_PROGRAM_ID,
   SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
 } from "./helpers";
-import CountdownTimer from "../CountdownTimer";
+import MintedNFTGrid from "./MintedNFTGrid";
+import DropTimer from "./DropTimer";
 
 const {
   metadata: { Metadata, MetadataProgram },
@@ -28,7 +29,7 @@ const MAX_CREATOR_LEN = 32 + 1 + 1;
 
 const CandyMachine = ({ walletAddress }) => {
   const [machineStats, setMachineStats] = useState(null);
-  const [mintImages, setMintImages] = useState([]);
+  const [hashTableData, setHashTableData] = useState([]);
 
   const [isMinting, setIsMinting] = useState(false);
   const [isLoadingMints, setIsLoadingMints] = useState(false);
@@ -334,77 +335,37 @@ const CandyMachine = ({ walletAddress }) => {
 
     if (data.length !== 0) {
       for (const mint of data) {
-        // Get URI
-        // TODO: There is some bug here that is adding on the array rather than replacing it after mint
-        const response = await fetch(mint.data.uri);
-        const parse = await response.json();
-
-        let isAlreadyAddedToMints = mintImages.find((mint) => {
-          console.log({ mint });
-          console.log(parse.image);
-          return mint === parse.image;
+				console.log(mint)
+        let isAlreadyAdded = hashTableData.find((item) => {
+					console.log({item})
+          return item.hash === mint.hash;
         });
 
-        // Get image URI
-        if (!isAlreadyAddedToMints) {
-          setMintImages((prevState) => [...prevState, parse.image]);
+        if (!isAlreadyAdded) {
+          setHashTableData((prevState) => [...prevState, mint]);
         }
       }
     }
 
     setIsLoadingMints(false);
-  }, [mintImages]);
+  }, [hashTableData]);
 
   useEffect(() => {
-    if (mintImages && !mintImages.length) {
+    if (hashTableData && !hashTableData.length) {
       getCandyMachineState();
     }
-  }, [getCandyMachineState, mintImages]);
-
-  const renderMintedItems = () => (
-    <div className="mt-4 p-8 grid justify-content-center border-4 border-light-blue-500">
-      <h2 className="mb-5 block text-pink-600 font-bold text-4xl">
-        🌈 Pick Up Sticks Mint Gallery 🌈
-      </h2>
-      <div className="grid gap-2 lg:gap-4 grid-cols-2 lg:grid-cols-4">
-        {mintImages.map((mint, index) => (
-          <div className="stickImage" key={index}>
-            <img src={mint} alt={`Minted NFT ${mint}`} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  // Create render function
-  const renderDropTimer = () => {
-    // Get the current date and dropDate in a JavaScript Date object
-    const currentDate = new Date();
-    const dropDate = new Date(machineStats.goLiveData * 1000);
-
-    // If currentDate is before dropDate, render our Countdown component
-    if (currentDate < dropDate) {
-      console.log("Before drop date!");
-      // Don't forget to pass over your dropDate!
-      return <CountdownTimer dropDate={dropDate} />;
-    }
-
-    // Else let's just return the current drop date
-    return (
-      <p className="mt-2 block text-gray-900 font-bold text-base">
-        {`Drop Date: ${machineStats.goLiveDateTimeString}`}
-      </p>
-    );
-  };
+  }, [getCandyMachineState, hashTableData]);
 
   return (
     // Only show this if machineStats is available
     machineStats && (
       <div className="machine-container">
-        {renderDropTimer()}
+        <DropTimer machineStats={machineStats} />
+
         <p className="mt-2 block text-indigo-500 font-bold text-4xl">
           {`Items Minted: ${machineStats.itemsRedeemed} / ${machineStats.itemsAvailable}`}
         </p>
+
         {/* Check to see if these properties are equal! */}
         {machineStats.itemsRedeemed === machineStats.itemsAvailable ? (
           <p className="sub-text">Sold Out 🙊</p>
@@ -427,13 +388,17 @@ const CandyMachine = ({ walletAddress }) => {
             )}
           </div>
         )}
+
         {isLoadingMints && (
           <div className="flex justify-center flex-col items-center my-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-						<div className="mt-2">Loading sticks (and sometimes circles)</div>
+            <div className="mt-2">Loading sticks (and sometimes circles)</div>
           </div>
         )}
-        {mintImages.length > 0 && renderMintedItems()}
+
+        {/* {mintImages.length > 0 && <MintedImages images={mintImages} />} */}
+
+        {hashTableData && hashTableData.length > 0 && <MintedNFTGrid hashTableData={hashTableData} />}
       </div>
     )
   );

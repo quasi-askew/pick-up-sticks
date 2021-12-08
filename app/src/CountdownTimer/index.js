@@ -5,7 +5,6 @@ const CountdownTimer = ({ dropDate }) => {
   // State
   const [timerString, setTimerString] = useState("");
 
-  // Our useEffect will run on comppnent load
   useEffect(() => {
     console.log("Setting interval...");
 
