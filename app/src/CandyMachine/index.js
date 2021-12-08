@@ -370,7 +370,7 @@ const CandyMachine = ({ walletAddress }) => {
               >
                 {isMinting
                   ? "✨ It's happening, you are minting! ✨"
-                  : "Mint Your Stick Today! "}
+                  : "Mint Your Sticks Today! "}
               </button>
             </div>
           </div>
