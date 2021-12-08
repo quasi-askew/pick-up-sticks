@@ -6,6 +6,7 @@ import { themeChange } from "theme-change";
 
 // Constants
 const themes = [
+	"cyberpunk",
   "dark",
   "cupcake",
   "bumblebee",
@@ -13,7 +14,6 @@ const themes = [
   "corporate",
   "synthwave",
   "retro",
-  "cyberpunk",
   "valentine",
   "halloween",
   "garden",
