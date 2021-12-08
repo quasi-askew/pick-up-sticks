@@ -1,22 +1,36 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import twitterLogo from "./assets/twitter-logo.svg";
 import CandyMachine from "./CandyMachine";
 import gif from "./assets/pickupsticks.gif";
-import randomColor from "randomcolor";
+import { themeChange } from "theme-change";
 
 // Constants
-const TWITTER_HANDLE = "_buildspace";
-const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
+const themes = [
+  "dark",
+  "cupcake",
+  "bumblebee",
+  "emerald",
+  "corporate",
+  "synthwave",
+  "retro",
+  "cyberpunk",
+  "valentine",
+  "halloween",
+  "garden",
+  "forest",
+  "aqua",
+  "lofi",
+  "pastel",
+  "fantasy",
+  "wireframe",
+  "black",
+  "luxury",
+  "dracula",
+  "cmyk",
+];
 
 const App = () => {
   const [walletAddress, setWalletAddress] = useState(null);
-  const [themeColors, setThemeColors] = useState({
-    text: "#ffffff",
-    background: "#000000",
-    button: "linear-gradient(to right, #4880EC, #019CAD)",
-    buttonText: "#000000",
-  });
 
   // Actions
 
@@ -64,23 +78,6 @@ const App = () => {
   };
 
   /*
-   * We want to render this UI when the user hasn't connected
-   * their wallet to our app yet.
-   */
-  const renderNotConnectedContainer = () => (
-    <button
-      className="cta-button connect-wallet-button"
-      onClick={connectWallet}
-      style={{
-        backgroundImage: themeColors.button,
-        color: themeColors.buttonText,
-      }}
-    >
-      Connect to Wallet
-    </button>
-  );
-
-  /*
    * When our component first mounts, let's check to see if we have a connected
    * Phantom Wallet
    */
@@ -93,58 +90,51 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    let buttonBgLeft = randomColor({
-      luminosity: "dark",
-    });
-    let buttonBgRight = randomColor({
-      luminosity: "dark",
-    });
-    setThemeColors({
-      text: randomColor({
-        luminosity: "dark",
-      }),
-      background: randomColor({
-        luminosity: "light",
-        format: "rgba",
-        alpha: 0.3,
-      }),
-      button: `linear-gradient(left, ${buttonBgLeft}, ${buttonBgRight})`,
-      buttonText: randomColor({
-        luminosity: "light",
-      }),
-    });
+    themeChange(false);
   }, []);
 
   return (
-    <div
-      className="App"
-      style={{
-        color: themeColors.text,
-        background: themeColors.background,
-      }}
-    >
-      <div className="container mx-auto">
-        <div className="header-container">
-          <div className="pickupsticks-gif-container">
-            <img src={gif} alt="Pick up sticks" />
+    <div className="App">
+      <div className="container mx-auto px-4 lg:px-0">
+        <div className="my-5 flex place-content-center">
+          <div className="form-control w-full max-w-xs">
+            <label className="label">
+              <span className="label-text">Choose your look</span>
+              <div className="label-text-alt">
+                Pick like there's no tomorrow
+              </div>
+            </label>
+            <select className="select w-full" data-choose-theme>
+              {themes.map((theme) => {
+								return (
+									<option key={theme} value={theme}>
+										{theme}
+									</option>
+								)
+							})}
+            </select>
           </div>
-					<h1 className="tracking-tight font-extrabold text-gray-900">
-            <span className="block xl:inline text-6xl text-indigo-900">Pick Up Sticks</span>
-            <span className="block mt-2 text-indigo-600"><a style={{color: themeColors.text}} href="https://p5js.org/">using p5.js</a></span>
+        </div>
+        <div className="pickupsticks-gif-container">
+          <img src={gif} alt="Pick up sticks" />
+        </div>
+        <div className="text-center">
+          <h1 className="tracking-tight font-extrabold">
+            <span className="block xl:inline text-6xl">Pick Up Sticks</span>
+            <span className="block mt-2">
+              <a href="https://p5js.org/">using p5.js</a>
+            </span>
           </h1>
-          {/* Add the condition to show this only if we don't have a wallet address */}
-          {!walletAddress && renderNotConnectedContainer()}
         </div>
+        {/* Add the condition to show this only if we don't have a wallet address */}
+        {!walletAddress && (
+          <div className="text-center mt-3">
+            <button className="btn btn-primary" onClick={connectWallet}>
+              Connect to Wallet
+            </button>
+          </div>
+        )}
         {walletAddress && <CandyMachine walletAddress={window.solana} />}
-        <div className="footer-container">
-          <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
-          <a
-            className="footer-text"
-            href={TWITTER_LINK}
-            target="_blank"
-            rel="noreferrer"
-          >{`built on @${TWITTER_HANDLE}`}</a>
-        </div>
       </div>
     </div>
   );

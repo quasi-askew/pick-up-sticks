@@ -20,9 +20,7 @@ const MintImage = ({ uri }) => {
 	}
 
   return (
-    <div className="stickImage">
       <img src={image} alt="" />
-    </div>
   );
 };
 

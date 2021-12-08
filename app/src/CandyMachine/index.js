@@ -3,7 +3,6 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import { Program, Provider, web3 } from "@project-serum/anchor";
 import { MintLayout, TOKEN_PROGRAM_ID, Token } from "@solana/spl-token";
 import { programs } from "@metaplex/js";
-import "./CandyMachine.css";
 import {
   candyMachineProgram,
   TOKEN_METADATA_PROGRAM_ID,
@@ -73,8 +72,11 @@ const CandyMachine = ({ walletAddress }) => {
       const account = metadataAccounts[index];
       const accountInfo = await connection.getParsedAccountInfo(account.pubkey);
       const metadata = new Metadata(hash.toString(), accountInfo.value);
-      if (metadataEnabled) mintHashes.push(metadata.data);
-      else mintHashes.push(metadata.data.mint);
+      if (metadataEnabled) {
+        mintHashes.push(metadata.data);
+      } else {
+        mintHashes.push(metadata.data.mint);
+      }
     }
 
     return mintHashes;
@@ -333,22 +335,9 @@ const CandyMachine = ({ walletAddress }) => {
       true
     );
 
-    if (data.length !== 0) {
-      for (const mint of data) {
-				console.log(mint)
-        let isAlreadyAdded = hashTableData.find((item) => {
-					console.log({item})
-          return item.hash === mint.hash;
-        });
-
-        if (!isAlreadyAdded) {
-          setHashTableData((prevState) => [...prevState, mint]);
-        }
-      }
-    }
-
+    setHashTableData(data);
     setIsLoadingMints(false);
-  }, [hashTableData]);
+  }, []);
 
   useEffect(() => {
     if (hashTableData && !hashTableData.length) {
@@ -359,46 +348,47 @@ const CandyMachine = ({ walletAddress }) => {
   return (
     // Only show this if machineStats is available
     machineStats && (
-      <div className="machine-container">
+      <div className="machine-container text-center">
         <DropTimer machineStats={machineStats} />
 
-        <p className="mt-2 block text-indigo-500 font-bold text-4xl">
+        <p className="mt-2 block font-bold text-4xl">
           {`Items Minted: ${machineStats.itemsRedeemed} / ${machineStats.itemsAvailable}`}
         </p>
 
         {/* Check to see if these properties are equal! */}
         {machineStats.itemsRedeemed === machineStats.itemsAvailable ? (
-          <p className="sub-text">Sold Out 🙊</p>
+          <p className="my-5 text-red-400">Sold Out 🙊</p>
         ) : (
           <div className="mt-5 sm:mt-8 sm:flex sm:justify-center">
-            {isMinting ? (
-              <div className="my-5 text-yellow-400 xl:inline text-6xl animate-pulse">
-                ✨ It's happening, you are minting! ✨
-              </div>
-            ) : (
-              <div className="flex content-center">
-                <button
-                  onClick={mintToken}
-                  disabled={isMinting}
-                  className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
-                >
-                  Mint NFT
-                </button>
-              </div>
-            )}
+            <div className="flex content-center mb-5">
+              <button
+                onClick={mintToken}
+                disabled={isMinting}
+                className={`btn btn-block btn-lg btn-wide btn-primary ${
+                  isMinting ? "loading" : ""
+                }`}
+              >
+                {isMinting
+                  ? "✨ It's happening, you are minting! ✨"
+                  : "Mint Your Stick Today! "}
+              </button>
+            </div>
           </div>
         )}
 
         {isLoadingMints && (
           <div className="flex justify-center flex-col items-center my-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <div
+              className="animate-spin rounded-full h-8 w-8 border-b-2"
+              style={{ borderColor: "#fe019a" }}
+            ></div>
             <div className="mt-2">Loading sticks (and sometimes circles)</div>
           </div>
         )}
 
-        {/* {mintImages.length > 0 && <MintedImages images={mintImages} />} */}
-
-        {hashTableData && hashTableData.length > 0 && <MintedNFTGrid hashTableData={hashTableData} />}
+        {hashTableData && hashTableData.length > 0 && (
+          <MintedNFTGrid hashTableData={hashTableData} />
+        )}
       </div>
     )
   );

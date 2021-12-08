@@ -14,7 +14,7 @@ const DropTimer = ({ machineStats }) => {
 
   // Else let's just return the current drop date
   return (
-    <p className="mt-2 block text-gray-900 font-bold text-base">
+    <p className="mt-2 block font-bold">
       {`Drop Date: ${machineStats.goLiveDateTimeString}`}
     </p>
   );
