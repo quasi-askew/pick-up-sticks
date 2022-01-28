@@ -126,114 +126,42 @@ const colorPalettes = [
   },
 ];
 
-const pickUpSticksData = {
-  totalNFTs: 8,
-  isSaveMode: false,
-  creatorAddress: "CtUaoA5v3MuLswN4NapgMmWRQZ6FT4mEQyiaoZmhuVKy",
-};
+var angle = 2.0;
+var offset = 300;
+var scalar = 1.5;
+var speed = .05;
+// var col = {
+//   r: 255,
+//   g: 0,
+//   b: 0,
+// };
 
 function setup() {
-  for (let nftIndex = 0; nftIndex < pickUpSticksData.totalNFTs; nftIndex++) {
-    let numberOfLines = getRandomNumber(10, 1000);
-    let canvas = createCanvas(1920, 1920);
+  createCanvas(600, 600);
+  noStroke();
+  background(0);
+}
 
-    // rarity vars
-    let hasMinimalLines = Math.random() < 0.1;
-    let hasGinormousLines = Math.random() < 0.1;
-    let hasMoreThanNormalLines = Math.random() < 0.3;
-    let hasMuchoLines = Math.random() < 0.3;
-    let hasHugeStrokes = Math.random() < 0.05;
+let colorPalette = colorPalettes.find(
+	(palette) => palette.name === "all basquiat"
+)
 
-    // set rarity data
-    if (hasMinimalLines) {
-      numberOfLines = numberOfLines / 5;
-    } else if (hasGinormousLines) {
-      numberOfLines = numberOfLines * 50;
-    } else if (hasMuchoLines) {
-      numberOfLines = numberOfLines * 10;
-    } else if (hasMoreThanNormalLines) {
-      numberOfLines = numberOfLines * 5;
-    }
+console.log({colorPalette})
 
-    // random bright background color on the canvas
-    let bgColor = randomColor({
-      luminosity: "bright",
-      format: "hex",
-    });
-
-    // Add the background color
-    background(bgColor);
-
-    // set the artist palette for the nft
-    let colorPalette =
-      colorPalettes[Math.floor(Math.random() * colorPalettes.length)];
-
-    // Add lines
-    for (let lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
-      let color =
-        colorPalette.colors[
-          Math.floor(Math.random() * colorPalette.colors.length)
-        ];
-      let lineColor = color;
-
-      stroke(lineColor);
-      strokeWeight(hasHugeStrokes ? 20 : getRandomNumber(1, 5));
-      line(
-        getRandomNumber(20, 940),
-        getRandomNumber(20, 940),
-        getRandomNumber(20, 940),
-        getRandomNumber(20, 940)
-      );
-			// Add circles
-			if (hasMinimalLines) {
-				let numberOfCircles = getRandomNumber(10, 1000);
-				for (let circleIndex = 0; circleIndex < numberOfCircles; circleIndex++) {
-					let color =
-						colorPalette.colors[
-							Math.floor(Math.random() * colorPalette.colors.length)
-						];
-					let circleColor = color;
-	
-					fill(circleColor);
-					noStroke();
-	
-					let circleSize = getRandomNumber(10, 300);
-	
-					ellipse(
-						getRandomNumber(20, 940),
-						getRandomNumber(20, 940),
-						circleSize,
-						circleSize
-					);
-				}
-			}
-    }
-
-
-    // Save Image and Data
-    if (pickUpSticksData.isSaveMode) {
-      const jsonData = {
-        name: `Pick Up Sticks #${nftIndex}`,
-        symbol: "",
-        image: `${nftIndex}.png`,
-        properties: {
-          files: [
-            {
-              uri: `${nftIndex}.png`,
-              type: "image/png",
-            },
-          ],
-          creators: [
-            {
-              address: pickUpSticksData.creatorAddress,
-              share: 100,
-            },
-          ],
-        },
-      };
-
-      saveCanvas(canvas, `${nftIndex}`, "png");
-      saveJSON(jsonData, `${nftIndex}.json`);
-    }
-  }
+function draw() {
+  // col.r = random(0, 200);
+  // col.g = random(0, 250);
+  // col.b = random(100, 250);
+  var x = offset + cos(angle) * scalar;
+  var y = offset + sin(angle) * scalar;
+	let c = colorPalette.colors[
+		Math.floor(Math.random() * colorPalette.colors.length)
+	];
+	let test = color(c)
+	console.log({c})
+  fill(test);
+  noStroke();
+  ellipse(x, y, 3, 3);
+  angle += speed;
+  scalar += speed;
 }

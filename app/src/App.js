@@ -150,7 +150,7 @@ const App = () => {
             </div>
           </div>
           <div className="grid grid-flow-col gap-4">
-            <a href="https://twitter.com/q_nitrof">
+            <a href="https://twitter.com/quasi_askew">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
