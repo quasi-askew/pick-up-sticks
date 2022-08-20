@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import CandyMachine from "./CandyMachine";
 import gif from "./assets/pickupsticks.gif";
-import morie from "./assets/morie.jpeg";
+import doodle from "./assets/doodle-6869.png";
 import { themeChange } from "theme-change";
 
 // Constants
@@ -145,8 +145,8 @@ const App = () => {
         </div>
         <div>
           <div className="avatar">
-            <div className="mb-8 w-24 h-24 mask mask-decagon">
-              <img src={morie} alt="Morie #1571" />
+            <div className="mb-8 w-24 h-24 mask mask-hexagon">
+              <img src={doodle} alt="Doodle #6869" />
             </div>
           </div>
           <div className="grid grid-flow-col gap-4">
