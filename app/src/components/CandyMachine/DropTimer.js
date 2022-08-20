@@ -7,17 +7,17 @@ const DropTimer = ({ machineStats }) => {
 
   // If currentDate is before dropDate, render our Countdown component
   if (currentDate < dropDate) {
-    console.log("Before drop date!");
     // Don't forget to pass over your dropDate!
     return <CountdownTimer dropDate={dropDate} />;
   }
 
   // Else let's just return the current drop date
-  return (
-    <p className="mt-2 block font-bold">
-      {`Drop Date: ${machineStats.goLiveDateTimeString}`}
-    </p>
-  );
+  return null
+  // return (
+  //   <p className="mt-2 block font-bold">
+  //     {`Drop Date: ${machineStats.goLiveDateTimeString}`}
+  //   </p>
+  // );
 };
 
 export default DropTimer;

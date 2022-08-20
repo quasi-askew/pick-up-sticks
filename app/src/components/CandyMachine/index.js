@@ -7,7 +7,7 @@ import {
   candyMachineProgram,
   TOKEN_METADATA_PROGRAM_ID,
   SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
-} from "./helpers";
+} from "../../utils/candyMachineHelpers";
 import MintedNFTGrid from "./MintedNFTGrid";
 import DropTimer from "./DropTimer";
 
@@ -32,6 +32,7 @@ const CandyMachine = ({ walletAddress }) => {
 
   const [isMinting, setIsMinting] = useState(false);
   const [isLoadingMints, setIsLoadingMints] = useState(false);
+  const [mintMessageError, setMintMessageError] = useState(false);
 
   // Actions
   const fetchHashTable = async (hash, metadataEnabled) => {
@@ -122,6 +123,7 @@ const CandyMachine = ({ walletAddress }) => {
     try {
       // Add this here
       setIsMinting(true);
+      setMintMessageError(null);
       const mint = web3.Keypair.generate();
       const token = await getTokenWallet(
         walletAddress.publicKey,
@@ -214,6 +216,7 @@ const CandyMachine = ({ walletAddress }) => {
         { commitment: "processed" }
       );
     } catch (error) {
+      console.log(error)
       let message = error.msg || "Minting failed! Please try again!";
 
       // If we have an error set our loading flag to false
@@ -234,7 +237,7 @@ const CandyMachine = ({ walletAddress }) => {
         }
       }
 
-      console.warn(message);
+      setMintMessageError(message)
     }
   };
 
@@ -355,6 +358,19 @@ const CandyMachine = ({ walletAddress }) => {
           {`Items Minted: ${machineStats.itemsRedeemed} / ${machineStats.itemsAvailable}`}
         </p>
 
+        {mintMessageError && (
+          <div className="flex justify-center">
+            <div className="max-w-sm">
+              <div className="alert alert-warning shadow-lg mt-4">
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                  <span className="ml-2">{mintMessageError}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Check to see if these properties are equal! */}
         {machineStats.itemsRedeemed === machineStats.itemsAvailable ? (
           <p className="my-5 text-red-400">Sold Out 🙊</p>
@@ -364,13 +380,12 @@ const CandyMachine = ({ walletAddress }) => {
               <button
                 onClick={mintToken}
                 disabled={isMinting}
-                className={`btn btn-block btn-lg btn-wide btn-primary ${
-                  isMinting ? "loading" : ""
-                }`}
+                className={`btn btn-block btn-lg btn-wide btn-primary ${isMinting ? "loading" : ""
+                  }`}
               >
                 {isMinting
                   ? "✨ It's happening, you are minting! ✨"
-                  : "Mint Your Sticks Today! "}
+                  : "Mint Your Sticks! "}
               </button>
             </div>
           </div>
@@ -385,6 +400,7 @@ const CandyMachine = ({ walletAddress }) => {
             <div className="mt-2">Loading sticks (and sometimes circles)</div>
           </div>
         )}
+
 
         {hashTableData && hashTableData.length > 0 && (
           <MintedNFTGrid hashTableData={hashTableData} />
